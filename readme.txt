@@ -1,5 +1,5 @@
 --Readme document for Kazuha Mo, kazuhak@uci.edu, 32722706 and Wanke Hou, wankeh@uci.edu, 56389780--
-A4 group number: * (A4 Group *)
+A4 group number: 8 (A4 Group 8)
 
 1. How many assignment points do you believe you completed (replace the *'s with your numbers)?
 
