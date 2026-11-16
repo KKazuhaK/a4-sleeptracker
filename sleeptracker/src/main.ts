@@ -13,6 +13,7 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+    // Register the storage provider and load saved data before the app renders.
     importProvidersFrom(IonicStorageModule.forRoot()),
     provideAppInitializer(() => inject(SleepService).init()),
   ],

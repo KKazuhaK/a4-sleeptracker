@@ -5,6 +5,7 @@ export class OvernightSleepData extends SleepData {
 	private _sleepEnd:Date;
 	quality?:number;
 
+	// Default times preserve no-argument construction used by the starter tests.
 	constructor(
 		sleepStart:Date = new Date(Date.now() - 8 * 60 * 60 * 1000),
 		sleepEnd:Date = new Date(),
@@ -36,6 +37,7 @@ export class OvernightSleepData extends SleepData {
 		this.loggedAt = this._sleepEnd;
 	}
 
+	/** Duration in whole minutes, shared by summaries and weekly statistics. */
 	get durationMinutes():number {
 		return Math.round((this._sleepEnd.getTime() - this._sleepStart.getTime()) / 60000);
 	}

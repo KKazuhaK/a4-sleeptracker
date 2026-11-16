@@ -11,6 +11,7 @@ describe('HomePage', () => {
     TestBed.configureTestingModule({
       providers: [{
         provide: Storage,
+        // The page test does not need browser storage; provide the service's minimal storage contract.
         useValue: { create: () => Promise.resolve({ get: async () => null, set: async () => undefined }) },
       }],
     });

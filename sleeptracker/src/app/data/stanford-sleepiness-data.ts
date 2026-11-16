@@ -15,6 +15,7 @@ export class StanfordSleepinessData extends SleepData {
 
 	private _loggedValue:number;
 
+	// Optional ID allows persisted entries to be reconstructed without changing identity.
 	constructor(loggedValue:number = 1, loggedAt:Date = new Date(), note?:string, id?:string) {
 		super(loggedAt, id);
 		this._loggedValue = loggedValue;

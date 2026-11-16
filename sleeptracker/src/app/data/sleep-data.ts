@@ -5,6 +5,7 @@ export class SleepData {
 	loggedAt:Date;
 	note?:string;
 
+	// Accept an ID when reviving a stored record; new records still receive a unique ID.
 	constructor(loggedAt:Date = new Date(), id?:string) {
 		this.id = id ?? nanoid();
 		this.loggedAt = loggedAt;

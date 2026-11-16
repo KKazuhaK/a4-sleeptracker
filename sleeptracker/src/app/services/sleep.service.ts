@@ -8,10 +8,13 @@ import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
 
 const DATA_KEY = 'sleep-tracker-data';
 const NOTIFICATION_SETTINGS_KEY = 'sleep-tracker-notifications';
+// Reserve stable IDs so each settings save can replace the app's scheduled reminders.
 const NOTIFICATION_IDS = [81000, 81001, 81002, 81003];
 
+/** Record type sent to the UI when a user opens a sleep-tracker notification. */
 export type SleepNotificationType = 'sleep' | 'sleepiness';
 
+/** User-configurable local reminder schedule persisted on the device. */
 export interface SleepNotificationSettings {
 	sleepinessEnabled: boolean;
 	sleepinessTimes: string[];
@@ -30,6 +33,7 @@ interface StoredSleepData {
 	note?: string;
 }
 
+// Reminders are off by default until the user explicitly enables them in Settings.
 const DEFAULT_NOTIFICATION_SETTINGS: SleepNotificationSettings = {
 	sleepinessEnabled: false,
 	sleepinessTimes: ['10:00', '14:00', '18:00'],
@@ -41,6 +45,7 @@ const DEFAULT_NOTIFICATION_SETTINGS: SleepNotificationSettings = {
 	providedIn: 'root'
 })
 export class SleepService {
+	// Keep the original static collections in sync for existing screens while callers migrate.
 	public static AllSleepData: SleepData[] = [];
 	public static AllOvernightData: OvernightSleepData[] = [];
 	public static AllSleepinessData: StanfordSleepinessData[] = [];
@@ -55,6 +60,7 @@ export class SleepService {
 
 	constructor(@Inject(Storage) private readonly storage: Pick<Storage, 'create'>) {}
 
+	/** Load saved records/settings once; app initialization awaits this before showing screens. */
 	init(): Promise<void> {
 		this.initPromise ??= this.loadFromStorage();
 		return this.initPromise;
@@ -80,6 +86,7 @@ export class SleepService {
 		return this.getOvernight()[0];
 	}
 
+	/** Create and persist a validated overnight-sleep record. */
 	async logOvernight(
 		start: Date,
 		end: Date,
@@ -146,6 +153,7 @@ export class SleepService {
 		});
 	}
 
+	/** Average records logged within the requested trailing time window. */
 	stats(days = 7): { avgSleepMinutes: number; avgSleepiness: number } {
 		if (!Number.isFinite(days) || days <= 0) {
 			throw new RangeError('The statistics period must be a positive number of days.');
@@ -173,6 +181,7 @@ export class SleepService {
 		});
 	}
 
+	/** Populate an empty tracker with sample entries for demonstrations. */
 	async loadDemoData(): Promise<void> {
 		await this.ensureInitialized();
 		await this.serializeMutation(async () => {
@@ -203,6 +212,7 @@ export class SleepService {
 		};
 	}
 
+	/** Validate settings, obtain permission if needed, then replace scheduled reminders. */
 	async saveNotificationSettings(settings: SleepNotificationSettings): Promise<void> {
 		await this.ensureInitialized();
 		const normalized = this.validateNotificationSettings(settings);
@@ -253,12 +263,14 @@ export class SleepService {
 	}
 
 	private serializeMutation<T>(operation: () => Promise<T>): Promise<T> {
+		// Serialize read-modify-write updates so concurrent actions cannot overwrite each other.
 		const result = this.mutationQueue.then(operation);
 		this.mutationQueue = result.then(() => undefined, () => undefined);
 		return result;
 	}
 
 	private async persist(records: SleepData[] = this.records): Promise<void> {
+		// Store plain objects with ISO dates instead of class instances that storage cannot revive.
 		const stored: StoredSleepData[] = records.map((record) => {
 			if (record instanceof OvernightSleepData) {
 				return {
@@ -371,6 +383,7 @@ export class SleepService {
 	}
 
 	private async scheduleNotifications(settings: SleepNotificationSettings): Promise<void> {
+		// Cancel this app's fixed reminder IDs first to avoid duplicates after settings edits.
 		await LocalNotifications.cancel({ notifications: NOTIFICATION_IDS.map((id) => ({ id })) });
 		const notifications = [];
 		if (settings.sleepinessEnabled) {
@@ -401,6 +414,7 @@ export class SleepService {
 	}
 
 	private async listenForNotificationActions(): Promise<void> {
+		// Publish only recognized record types so the UI can route to the matching log sheet.
 		await LocalNotifications.addListener('localNotificationActionPerformed', ({ notification }) => {
 			const recordType = notification.extra?.recordType;
 			if (recordType === 'sleep' || recordType === 'sleepiness') {
