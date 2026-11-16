@@ -26,7 +26,7 @@ A4 group number: 8 (A4 Group 8)
 
 5. Is there anything special we need to know in order to run your code?
 
-
+From `sleeptracker`, run `npm install` and `npm start` to launch the app in a browser. To run on iOS, use a Mac with Xcode, run `npx cap sync ios` and then `npx cap run ios`; local notifications require notification permission.
 
 --Aim for no more than two sentences for each of the following questions.--
 
@@ -53,13 +53,16 @@ A4 group number: 8 (A4 Group 8)
 
 11. Which feature choose--using a native device resource, backing up logged data, or both?
 
-
+Both: the app stores records locally with Ionic Storage and uses native local notifications for sleep and daytime sleepiness reminders.
 
 12. If you used a native device resource, what feature did you add? How does this feature change the app's experience for a user?
 
-
+Local reminders prompt students to record sleepiness during the day and last night's sleep in the morning. Users can choose whether each reminder is enabled and set the reminder times.
 
 13. If you backed up logged data, where does it back up to?
 
+Sleep records are persisted on the device through Ionic Storage; they are not uploaded to a remote service.
 
 14. How does your app implement or follow principles of good mobile design?
+
+The data layer supports the design through reliable local persistence, editable record objects, statistics, and delete/restore operations for an undo interaction. Notification settings and scheduled reminders encourage regular logging without requiring users to remember every entry.

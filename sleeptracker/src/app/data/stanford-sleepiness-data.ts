@@ -13,12 +13,20 @@ export class StanfordSleepinessData extends SleepData {
 	'Sleepy, woozy, fighting sleep; prefer to lie down', //6
 	'No longer fighting sleep, sleep onset soon; having dream-like thoughts']; //7
 
-	private loggedValue:number;
+	private _loggedValue:number;
 
-	constructor(loggedValue:number, loggedAt:Date = new Date()) {
-		super();
-		this.loggedValue = loggedValue;
-		this.loggedAt = loggedAt;
+	constructor(loggedValue:number = 1, loggedAt:Date = new Date(), note?:string, id?:string) {
+		super(loggedAt, id);
+		this._loggedValue = loggedValue;
+		this.note = note;
+	}
+
+	get loggedValue():number {
+		return this._loggedValue;
+	}
+
+	set loggedValue(value:number) {
+		this._loggedValue = value;
 	}
 
 	override summaryString():string {
