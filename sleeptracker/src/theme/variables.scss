@@ -1,2 +1,230 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+// Design tokens. Light is the default; dark ("night") is the primary design and follows the system.
+:root {
+  --app-bg: #f0eef9;
+  --app-bg-grad: linear-gradient(180deg, #f4f3fb 0%, #ebe9f8 100%);
+  --app-surface: rgba(255, 255, 255, 0.8);
+  --app-surface-solid: #ffffff;
+  --app-hairline: rgba(21, 23, 43, 0.08);
+  --app-border: rgba(21, 23, 43, 0.08);
+  --app-bar-bg: rgba(244, 243, 251, 0.78);
+  // Floating glass tab bar.
+  --app-tabbar-bg: rgba(255, 255, 255, 0.62);
+  --app-tabbar-edge: rgba(255, 255, 255, 0.7);
+  --app-tabbar-shadow: 0 10px 30px rgba(21, 23, 43, 0.14);
+  --app-tabbar-selected: rgba(91, 75, 219, 0.14);
+  --app-tabbar-fg: #5d6283;
+  --app-tabbar-fg-selected: #4d3fd0;
+  --app-card-shadow: 0 8px 24px rgba(21, 23, 43, 0.06);
+  --app-text: #15172b;
+  --app-text-2: #5d6283;
+  --app-primary: #5b4bdb;
+  --app-accent-soft: rgba(91, 75, 219, 0.12);
+  --app-accent-fg: #4d3fd0;
+  --app-btn-grad: linear-gradient(135deg, #6b5be6 0%, #4d3fd0 100%);
+  --app-track: rgba(21, 23, 43, 0.07);
+  --app-glass-blur: blur(20px) saturate(140%);
+  --arc-a: #5b4bdb;
+  --arc-b: #9b8ff0;
+
+  // Sleepiness tiers: soft background + foreground pair (>= 4.5:1), plus a strong colour for marks.
+  --tier-low-bg: #d1fae5;
+  --tier-low-fg: #047857;
+  --tier-low-strong: #34d399;
+  --tier-mid-bg: #fef3c7;
+  --tier-mid-fg: #92400e;
+  --tier-mid-strong: #fbbf24;
+  --tier-high-bg: #ffe4e6;
+  --tier-high-fg: #be123c;
+  --tier-high-strong: #fb7185;
+  --app-danger-fg: #be123c;
+  // Destructive capsule (white text, 4.7:1) and glass alert surfaces.
+  --app-danger: #e11d48;
+  --app-alert-bg: rgba(255, 255, 255, 0.72);
+  --app-alert-btn-bg: rgba(21, 23, 43, 0.07);
+  --app-picker-bg-rgb: 248, 247, 253;
+
+  --app-radius-card: 22px;
+  --app-radius-btn: 22px;
+  --app-space-1: 8px;
+  --app-space-2: 16px;
+  --app-space-3: 24px;
+  --app-space-4: 32px;
+
+  --ion-font-family: -apple-system, system-ui, "PingFang SC", sans-serif;
+  --app-font-rounded: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+}
+
+// Precomputed step colours (no color-mix, for older iOS).
+@mixin steps-light {
+  --ion-background-color-step-50: #e5e3ef;
+  --ion-text-color-step-50: #202235;
+  --ion-background-color-step-100: #dad9e4;
+  --ion-text-color-step-100: #2b2c40;
+  --ion-background-color-step-150: #cfceda;
+  --ion-text-color-step-150: #36374a;
+  --ion-background-color-step-200: #c4c3d0;
+  --ion-text-color-step-200: #414254;
+  --ion-background-color-step-250: #b9b8c6;
+  --ion-text-color-step-250: #4c4d5e;
+  --ion-background-color-step-300: #aeaebb;
+  --ion-text-color-step-300: #575869;
+  --ion-background-color-step-350: #a3a3b1;
+  --ion-text-color-step-350: #626273;
+  --ion-background-color-step-400: #9898a7;
+  --ion-text-color-step-400: #6d6d7d;
+  --ion-background-color-step-450: #8d8d9c;
+  --ion-text-color-step-450: #787888;
+  --ion-background-color-step-500: #828292;
+  --ion-text-color-step-500: #828292;
+  --ion-background-color-step-550: #787888;
+  --ion-text-color-step-550: #8d8d9c;
+  --ion-background-color-step-600: #6d6d7d;
+  --ion-text-color-step-600: #9898a7;
+  --ion-background-color-step-650: #626273;
+  --ion-text-color-step-650: #a3a3b1;
+  --ion-background-color-step-700: #575769;
+  --ion-text-color-step-700: #aeaebb;
+  --ion-background-color-step-750: #4c4d5e;
+  --ion-text-color-step-750: #b9b8c6;
+  --ion-background-color-step-800: #414254;
+  --ion-text-color-step-800: #c4c3d0;
+  --ion-background-color-step-850: #36374a;
+  --ion-text-color-step-850: #cfceda;
+  --ion-background-color-step-900: #2b2c40;
+  --ion-text-color-step-900: #dad9e4;
+  --ion-background-color-step-950: #202235;
+  --ion-text-color-step-950: #e5e3ef;
+}
+@mixin steps-dark {
+  --ion-background-color-step-50: #191f3a;
+  --ion-text-color-step-50: #e3e5f5;
+  --ion-background-color-step-100: #242a45;
+  --ion-text-color-step-100: #d8daea;
+  --ion-background-color-step-150: #30354f;
+  --ion-text-color-step-150: #cccfe0;
+  --ion-background-color-step-200: #3b4059;
+  --ion-text-color-step-200: #c1c4d6;
+  --ion-background-color-step-250: #464b64;
+  --ion-text-color-step-250: #b6b9cb;
+  --ion-background-color-step-300: #51566e;
+  --ion-text-color-step-300: #abaec1;
+  --ion-background-color-step-350: #5c6178;
+  --ion-text-color-step-350: #a0a3b7;
+  --ion-background-color-step-400: #686c83;
+  --ion-text-color-step-400: #9498ac;
+  --ion-background-color-step-450: #73778d;
+  --ion-text-color-step-450: #898da2;
+  --ion-background-color-step-500: #7e8298;
+  --ion-text-color-step-500: #7e8298;
+  --ion-background-color-step-550: #898da2;
+  --ion-text-color-step-550: #73778d;
+  --ion-background-color-step-600: #9498ac;
+  --ion-text-color-step-600: #686c83;
+  --ion-background-color-step-650: #a0a3b7;
+  --ion-text-color-step-650: #5c6178;
+  --ion-background-color-step-700: #abaec1;
+  --ion-text-color-step-700: #51566e;
+  --ion-background-color-step-750: #b6b9cb;
+  --ion-text-color-step-750: #464b64;
+  --ion-background-color-step-800: #c1c4d6;
+  --ion-text-color-step-800: #3b4059;
+  --ion-background-color-step-850: #cccfe0;
+  --ion-text-color-step-850: #30354f;
+  --ion-background-color-step-900: #d8daea;
+  --ion-text-color-step-900: #242a45;
+  --ion-background-color-step-950: #e3e5f5;
+  --ion-text-color-step-950: #191f3a;
+}
+
+@mixin map-ionic-vars($bg-rgb, $text-rgb) {
+  --ion-background-color-rgb: #{$bg-rgb};
+  --ion-text-color-rgb: #{$text-rgb};
+  --ion-text-color: var(--app-text);
+  --ion-item-background: transparent;
+  --ion-card-background: var(--app-surface);
+  --ion-toolbar-background: var(--app-bar-bg);
+  --ion-toolbar-border-color: var(--app-hairline);
+  --ion-tab-bar-background: var(--app-bar-bg);
+  --ion-tab-bar-border-color: var(--app-hairline);
+  --ion-tab-bar-color: var(--app-text-2);
+  --ion-tab-bar-color-selected: var(--ion-color-primary);
+  --ion-border-color: var(--app-hairline);
+}
+
+// Specificity must beat Ionic's :root.ios / :root.md palette rules.
+html:root.ios,
+html:root.md,
+html:root,
+body {
+  @include map-ionic-vars('240, 238, 249', '21, 23, 43');
+  @include steps-light;
+  --ion-background-color: #f0eef9;
+  --ion-color-primary: #5b4bdb;
+  --ion-color-primary-rgb: 91, 75, 219;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #5042c1;
+  --ion-color-primary-tint: #6c5ddf;
+}
+
+html:root.ios ion-modal {
+  --ion-background-color: var(--app-bg);
+  --ion-toolbar-background: transparent;
+  --ion-toolbar-border-color: var(--app-hairline);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-bg: #0e1430;
+    --app-bg-grad: linear-gradient(180deg, #0b1026 0%, #141a3d 100%);
+    --app-surface: rgba(255, 255, 255, 0.06);
+    --app-surface-solid: #1a2046;
+    --app-hairline: rgba(255, 255, 255, 0.08);
+    --app-border: rgba(255, 255, 255, 0.08);
+    --app-bar-bg: rgba(11, 16, 38, 0.72);
+    // Lighter and more opaque than the cards so the floating bar stands out at night.
+    --app-tabbar-bg: rgba(52, 60, 118, 0.82);
+    --app-tabbar-edge: rgba(255, 255, 255, 0.2);
+    --app-tabbar-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.35);
+    --app-tabbar-selected: rgba(139, 124, 246, 0.42);
+    // Light labels at night: white on the selected pill, pale on the bar (both > 7:1).
+    --app-tabbar-fg: #d4d8f5;
+    --app-tabbar-fg-selected: #ffffff;
+    --app-card-shadow: none;
+    --app-text: #eef0ff;
+    --app-text-2: #9aa3c7;
+    --app-primary: #8b7cf6;
+    --app-accent-soft: rgba(139, 124, 246, 0.18);
+    --app-btn-grad: linear-gradient(135deg, #6f5ff0 0%, #5546d6 100%);
+    --app-accent-fg: #c4bbff;
+    --app-track: rgba(255, 255, 255, 0.07);
+    --arc-a: #8b7cf6;
+    --arc-b: #c4b5fd;
+
+    --tier-low-bg: rgba(52, 211, 153, 0.16);
+    --tier-low-fg: #6ee7b7;
+    --tier-mid-bg: rgba(251, 191, 36, 0.16);
+    --tier-mid-fg: #fcd34d;
+    --tier-high-bg: rgba(251, 113, 133, 0.16);
+    --tier-high-fg: #fda4af;
+    --app-danger-fg: #fda4af;
+    --app-alert-bg: rgba(30, 36, 78, 0.72);
+    --app-alert-btn-bg: rgba(255, 255, 255, 0.1);
+    --app-picker-bg-rgb: 28, 34, 72;
+  }
+
+  html:root.ios,
+  html:root.md,
+  html:root,
+  body {
+    @include map-ionic-vars('14, 20, 48', '238, 240, 255');
+    @include steps-dark;
+    --ion-background-color: #0e1430;
+    --ion-color-primary: #8b7cf6;
+    --ion-color-primary-rgb: 139, 124, 246;
+    --ion-color-primary-contrast: #0b1026;
+    --ion-color-primary-contrast-rgb: 11, 16, 38;
+    --ion-color-primary-shade: #7a6dd9;
+    --ion-color-primary-tint: #9789f7;
+  }
+}

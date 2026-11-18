@@ -11,7 +11,8 @@ import { SleepService } from './app/services/sleep.service';
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    // The app is designed iOS-first, so use iOS styling on every platform (including the browser).
+    provideIonicAngular({ mode: 'ios' }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     // Register the storage provider and load saved data before the app renders.
     importProvidersFrom(IonicStorageModule.forRoot()),
