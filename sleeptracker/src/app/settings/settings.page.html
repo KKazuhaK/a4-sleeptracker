@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="page-pad">
+    @if (settings; as s) {
+      <h2 class="section-title">Reminders</h2>
+
+      <section class="group glass">
+        <div class="row">
+          <span class="badge"><ion-icon name="notifications-outline"></ion-icon></span>
+          <ion-toggle class="grow" [checked]="s.sleepinessEnabled" (ionChange)="toggleSleepiness($event)">Sleepiness reminders</ion-toggle>
+        </div>
+        @if (s.sleepinessEnabled) {
+          @for (t of s.sleepinessTimes; track $index) {
+            <div class="row sub">
+              <span class="grow">Reminder {{ $index + 1 }}</span>
+              <ion-datetime-button [datetime]="'st-' + $index"></ion-datetime-button>
+              @if (s.sleepinessTimes.length > 1) {
+                <ion-button fill="clear" class="icon-btn" [attr.aria-label]="'Remove reminder ' + ($index + 1)" (click)="removeTime($index)">
+                  <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+                </ion-button>
+              }
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime [id]="'st-' + $index" presentation="time" [preferWheel]="true"
+                    [value]="timeToIso(t)" (ionChange)="setSleepinessTime($index, $event)"></ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </div>
+          }
+          @if (s.sleepinessTimes.length < maxTimes) {
+            <div class="row sub">
+              <ion-button fill="clear" class="add-btn" (click)="addTime()">
+                <ion-icon slot="start" name="add-outline"></ion-icon>Add time
+              </ion-button>
+            </div>
+          }
+        }
+      </section>
+
+      <section class="group glass">
+        <div class="row">
+          <span class="badge"><ion-icon name="moon-outline"></ion-icon></span>
+          <ion-toggle class="grow" [checked]="s.sleepReminderEnabled" (ionChange)="toggleSleepReminder($event)">Morning sleep reminder</ion-toggle>
+        </div>
+        @if (s.sleepReminderEnabled) {
+          <div class="row sub">
+            <span class="grow">Time</span>
+            <ion-datetime-button datetime="sleep-time"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="sleep-time" presentation="time" [preferWheel]="true"
+                  [value]="timeToIso(s.sleepReminderTime)" (ionChange)="setSleepReminderTime($event)"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </div>
+        }
+      </section>
+    }
+
+    <h2 class="section-title">Data</h2>
+    <section class="group glass">
+      <button type="button" class="row action" [disabled]="hasRecords" (click)="loadDemo()">
+        <span class="badge"><ion-icon name="flask-outline"></ion-icon></span>
+        <span class="grow">Load demo data</span>
+      </button>
+      <button type="button" class="row action danger" [disabled]="!hasRecords" (click)="confirmOpen = true">
+        <span class="badge danger-badge"><ion-icon name="trash-outline"></ion-icon></span>
+        <span class="grow">Delete all logs</span>
+      </button>
+    </section>
+    @if (hasRecords) { <p class="footnote">Demo data can only be loaded when there are no logs.</p> }
+
+    <ion-alert
+      [isOpen]="confirmOpen"
+      header="Delete all logs?"
+      message="This permanently removes every sleep and sleepiness entry. This cannot be undone."
+      [buttons]="alertButtons"
+      (didDismiss)="confirmOpen = false"
+    ></ion-alert>
+  </div>
+</ion-content>
