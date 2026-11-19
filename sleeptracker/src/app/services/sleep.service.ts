@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { SleepData } from '../data/sleep-data';
 import { OvernightSleepData } from '../data/overnight-sleep-data';
 import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
@@ -55,7 +55,7 @@ export class SleepService {
 	private storageReady?: Promise<Pick<Storage, 'get' | 'set'>>;
 	private initPromise?: Promise<void>;
 	private notificationSettings: SleepNotificationSettings = structuredClone(DEFAULT_NOTIFICATION_SETTINGS);
-	private readonly notificationActionSubject = new Subject<SleepNotificationType>();
+	private readonly notificationActionSubject = new ReplaySubject<SleepNotificationType>(1);
 	readonly notificationAction$ = this.notificationActionSubject.asObservable();
 
 	constructor(@Inject(Storage) private readonly storage: Pick<Storage, 'create'>) {}
@@ -69,17 +69,21 @@ export class SleepService {
 	getOvernight(): OvernightSleepData[] {
 		return this.records
 			.filter((record): record is OvernightSleepData => record instanceof OvernightSleepData)
+			.map((record) => this.cloneRecord(record))
 			.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
 	}
 
 	getSleepiness(): StanfordSleepinessData[] {
 		return this.records
 			.filter((record): record is StanfordSleepinessData => record instanceof StanfordSleepinessData)
+			.map((record) => this.cloneRecord(record))
 			.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
 	}
 
 	getAll(): SleepData[] {
-		return [...this.records].sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
+		return this.records
+			.map((record) => this.cloneRecord(record))
+			.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
 	}
 
 	getLastNight(): OvernightSleepData | undefined {
@@ -232,8 +236,22 @@ export class SleepService {
 
 	private async loadFromStorage(): Promise<void> {
 		const storage = await this.storageInstance();
-		const stored = await storage.get(DATA_KEY) as StoredSleepData[] | null;
-		this.records = stored === null ? [] : stored.map((item) => this.restoreStoredRecord(item));
+		const stored: unknown = await storage.get(DATA_KEY);
+		const restoredRecords: SleepData[] = [];
+		if (stored !== null) {
+			if (Array.isArray(stored)) {
+				stored.forEach((item, index) => {
+					try {
+						restoredRecords.push(this.restoreStoredRecord(item as StoredSleepData));
+					} catch (error) {
+						console.warn(`Skipping invalid saved sleep record at index ${index}.`, error);
+					}
+				});
+			} else {
+				console.warn('Saved sleep data is not a list; ignoring it.');
+			}
+		}
+		this.records = restoredRecords;
 		this.refreshLegacyCollections();
 
 		const savedSettings = await storage.get(NOTIFICATION_SETTINGS_KEY) as SleepNotificationSettings | null;
@@ -346,6 +364,32 @@ export class SleepService {
 		const date = new Date(value);
 		this.validateDate(date, label);
 		return date;
+	}
+
+	private cloneRecord(record: OvernightSleepData): OvernightSleepData;
+	private cloneRecord(record: StanfordSleepinessData): StanfordSleepinessData;
+	private cloneRecord(record: SleepData): SleepData;
+	private cloneRecord(record: SleepData): SleepData {
+		if (record instanceof OvernightSleepData) {
+			const clone = new OvernightSleepData(
+				new Date(record.sleepStart),
+				new Date(record.sleepEnd),
+				record.quality,
+				record.note,
+				record.id,
+			);
+			clone.loggedAt = new Date(record.loggedAt);
+			return clone;
+		}
+		if (record instanceof StanfordSleepinessData) {
+			return new StanfordSleepinessData(
+				record.loggedValue,
+				new Date(record.loggedAt),
+				record.note,
+				record.id,
+			);
+		}
+		throw new Error('Unsupported sleep record type.');
 	}
 
 	private average(values: number[]): number {

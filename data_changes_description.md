@@ -16,6 +16,8 @@ sleepService.stats(7);         // { avgSleepMinutes: number; avgSleepiness: numb
 
 `stats()` defaults to the last 7 days; an average is `0` when there are no records of that type. Records expose `id`, `loggedAt`, and optional `note`. Overnight records also expose `sleepStart`, `sleepEnd`, optional `quality`, and `durationMinutes`; sleepiness records expose `loggedValue` (1–7).
 
+Each getter returns detached record copies, not the service's internal objects. Callers can edit a returned record and discard it on Cancel without changing stored in-memory data; persist accepted edits with `update()`.
+
 ## Creating, editing, and deleting
 
 All changes that write data return promises. Await them before showing success or closing a form:
@@ -59,3 +61,11 @@ await sleepService.saveNotificationSettings({
 Saving enabled reminders requests notification permission when needed and schedules/cancels the app's local reminders. Handle a permission or scheduling failure as an error.
 
 Subscribe to `notificationAction$` (type: `'sleep' | 'sleepiness'`) to open the corresponding record sheet when a notification is tapped. For example, `'sleep'` should open the overnight-sleep form and `'sleepiness'` the sleepiness form. The page/router should own this UI navigation; the service only emits the requested record type.
+
+The service retains the most recent notification action for a subscriber that starts listening after app startup (for example, when iOS delivers a notification tap before the page is ready). The replay buffer holds one action.
+
+## Startup and lifecycle safeguards
+
+When saved records are restored, an invalid record is skipped and reported with a console warning so that one corrupted entry does not prevent the app from opening. If the stored record collection is not a list, it is ignored with a warning.
+
+`HomePage` declares Angular's `OnInit` interface for its existing `ngOnInit()` method. This is a lint/style declaration and does not change page behavior.

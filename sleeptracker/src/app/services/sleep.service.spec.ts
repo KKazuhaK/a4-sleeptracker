@@ -59,6 +59,52 @@ describe('SleepService', () => {
 		expect(restoredSleepiness.loggedAt).toEqual(new Date('2026-11-16T14:00:00'));
 	});
 
+	it('skips corrupted stored records and restores the valid ones', async () => {
+		storedValues.set('sleep-tracker-data', [
+			{ id: 'broken', kind: 'sleepiness', loggedAt: 'not-a-date', loggedValue: 3 },
+			{ id: 'valid', kind: 'sleepiness', loggedAt: '2026-11-16T14:00:00.000Z', loggedValue: 5 },
+		]);
+		const warning = spyOn(console, 'warn');
+		const restoredService = new SleepService(storageMock);
+
+		await restoredService.init();
+
+		expect(restoredService.getSleepiness().map((record) => record.id)).toEqual(['valid']);
+		expect(warning).toHaveBeenCalled();
+	});
+
+	it('replays notification actions to subscribers that start listening later', () => {
+		service['notificationActionSubject'].next('sleep');
+
+		const received: string[] = [];
+		service.notificationAction$.subscribe((recordType) => received.push(recordType));
+
+		expect(received).toEqual(['sleep']);
+	});
+
+	it('returns detached record copies from getters', async () => {
+		const start = new Date('2026-11-15T23:00:00');
+		const end = new Date('2026-11-16T07:00:00');
+		const overnight = await service.logOvernight(start, end);
+		const sleepiness = await service.logSleepiness(5, new Date('2026-11-16T14:00:00'));
+		const overnightCopy = service.getOvernight()[0];
+		const sleepinessCopy = service.getSleepiness()[0];
+		const allCopy = service.getAll();
+
+		expect(overnightCopy).not.toBe(overnight);
+		expect(sleepinessCopy).not.toBe(sleepiness);
+		overnightCopy.sleepStart.setTime(0);
+		overnightCopy.loggedAt.setTime(0);
+		sleepinessCopy.loggedAt.setTime(0);
+		sleepinessCopy.loggedValue = 1;
+		allCopy[0].loggedAt.setTime(0);
+
+		expect(service.getOvernight()[0].sleepStart).toEqual(start);
+		expect(service.getOvernight()[0].loggedAt).toEqual(end);
+		expect(service.getSleepiness()[0].loggedAt).toEqual(new Date('2026-11-16T14:00:00'));
+		expect(service.getSleepiness()[0].loggedValue).toBe(5);
+	});
+
 	it('calculates averages and supports deleting and restoring records', async () => {
 		const start = new Date(Date.now() - 9 * 60 * 60 * 1000);
 		const end = new Date(Date.now() - 1 * 60 * 60 * 1000);

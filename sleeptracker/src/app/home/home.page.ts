@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { SleepService } from '../services/sleep.service';
 import { SleepData } from '../data/sleep-data';
@@ -11,7 +11,7 @@ import { StanfordSleepinessData } from '../data/stanford-sleepiness-data';
   styleUrls: ['home.page.scss'],
   imports: [IonHeader, IonToolbar, IonTitle, IonContent],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   constructor(public sleepService:SleepService) {
 
 	}
