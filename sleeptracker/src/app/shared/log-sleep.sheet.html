@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="solid" class="bar-btn" aria-label="Cancel" (click)="cancel()"><ion-icon slot="icon-only" name="close"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>{{ record ? 'Edit sleep' : 'Log sleep' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" class="bar-btn bar-btn-primary" aria-label="Save" (click)="save()" [disabled]="!valid || saving"><ion-icon slot="icon-only" name="checkmark"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="sheet-body">
+    <span class="field-label first">Which night</span>
+    <div class="chips" role="radiogroup" aria-label="Which night" (keydown)="onChipKey($event)">
+      <button type="button" role="radio" class="chip" [attr.aria-checked]="choice === 'last'" [attr.tabindex]="chipTab('last')" (click)="pickNight('last')">Last night</button>
+      <button type="button" role="radio" class="chip" [attr.aria-checked]="choice === 'before'" [attr.tabindex]="chipTab('before')" (click)="pickNight('before')">Night before</button>
+      <button type="button" role="radio" class="chip" [attr.aria-checked]="choice === 'custom'" [attr.tabindex]="chipTab('custom')" (click)="$any($event.currentTarget).blur(); pickingDate = true">{{ customLabel }}</button>
+    </div>
+
+    <app-sleep-dial class="dial" [editable]="true" [durationMinutes]="elapsed" [bedMin]="bedMin" [wakeMin]="wakeMin"
+      (bedMinChange)="setBedMin($event)" (wakeMinChange)="setWakeMin($event)" />
+    <p class="hint center">Drag the moon and sun, or use the rows below.</p>
+
+    <div class="group glass">
+      <div class="time-row">
+        <span>Bedtime</span>
+        <ion-datetime-button datetime="bed-time" presentation="time"></ion-datetime-button>
+      </div>
+      <div class="time-row">
+        <span>Wake up</span>
+        <ion-datetime-button datetime="wake-time" presentation="time"></ion-datetime-button>
+      </div>
+    </div>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="bed-time" presentation="time" [preferWheel]="true" [value]="timeToIso(hhmm(bedMin))" (ionChange)="setBedTime($event)"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="wake-time" presentation="time" [preferWheel]="true" [value]="timeToIso(hhmm(wakeMin))" (ionChange)="setWakeTime($event)"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+
+    @if (same) {
+      <p class="duration error-text">Bedtime and wake time can't be the same.</p>
+    } @else if (future) {
+      <p class="duration error-text">Wake time can't be in the future.</p>
+    } @else {
+      <p class="duration num-rounded">{{ summary }}</p>
+    }
+    @if (lengthWarning; as w) {
+      <p class="warn-text"><ion-icon name="warning-outline"></ion-icon><span>{{ w }}</span></p>
+    }
+    @if (duplicateWarning; as w) {
+      <p class="warn-text"><ion-icon name="warning-outline"></ion-icon><span>{{ w }}</span></p>
+    }
+
+    <span class="field-label">Sleep quality (optional)</span>
+    <div class="quality-row">
+      @for (q of qualities; track q) {
+        <button type="button" class="quality-btn num-rounded" [attr.aria-pressed]="quality === q" (click)="setQuality(q)">{{ q }}</button>
+      }
+    </div>
+    <p class="muted hint">1 = poor, 5 = great. Tap again to clear.</p>
+
+    <span class="field-label">Note (optional)</span>
+    <ion-textarea class="note-input" [autoGrow]="true" rows="2" placeholder="Anything worth remembering" [value]="note" (ionInput)="setNote($event)"></ion-textarea>
+  </div>
+
+  <ion-modal class="date-modal" [isOpen]="pickingDate" (didDismiss)="pickingDate = false">
+    <ng-template>
+      <ion-datetime #datePicker presentation="date" [max]="maxNight" [value]="nightValue"
+        (ionChange)="setCustomDate($event)">
+        <div slot="buttons" class="picker-actions">
+          <ion-button fill="solid" (click)="datePicker.cancel(true)">Cancel</ion-button>
+          <ion-button fill="solid" class="primary" (click)="datePicker.confirm(true)">Done</ion-button>
+        </div>
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+</ion-content>

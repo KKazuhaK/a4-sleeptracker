@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Today</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Today</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="page-pad">
+    <section class="app-card hero">
+      <h2>Last night</h2>
+      <app-sleep-dial [start]="lastNight?.sleepStart" [end]="lastNight?.sleepEnd" [quality]="lastNight?.quality" />
+      @if (lastNight) {
+        @if (comparison) { <p class="chip">{{ comparison }}</p> }
+      } @else {
+        <p class="muted hint">
+          @if (mostRecent; as m) {
+            Most recent night: woke {{ formatDate(m.sleepEnd) }}, {{ formatDuration(m.durationMinutes) }}
+          } @else {
+            Tap Log sleep to add your first night
+          }
+        </p>
+        <ion-button class="app-btn" expand="block" (click)="logSleep()">
+          <ion-icon slot="start" name="bed-outline"></ion-icon>Log sleep
+        </ion-button>
+      }
+    </section>
+
+    <section class="app-card">
+      <h2>Past 7 days</h2>
+      <app-week-chart [days]="week" />
+    </section>
+
+    <section class="app-card">
+      <h2>Sleepiness today</h2>
+      @if (latest; as l) {
+        <div class="latest">
+          <span class="score num-rounded" [class]="'score num-rounded tier-fg-' + latestTier">{{ l.loggedValue }}</span>
+          <span class="latest-text">
+            <span class="latest-label" [class]="'latest-label tier-fg-' + latestTier">{{ latestLabel }}</span>
+            <span class="muted num">Latest, {{ formatTime(l.loggedAt) }}</span>
+          </span>
+        </div>
+        @for (r of todays; track r.id) {
+          <div class="row">
+            <span class="num muted">{{ formatTime(r.loggedAt) }}</span>
+            <app-tier-pill [value]="r.loggedValue" />
+          </div>
+        }
+      } @else {
+        <p class="muted" style="margin:0">No sleepiness logged today — tap Log sleepiness</p>
+      }
+    </section>
+
+    <div class="actions">
+      <ion-button class="app-btn" expand="block" (click)="logSleepiness()">
+        <ion-icon slot="start" name="pulse-outline"></ion-icon>Log sleepiness
+      </ion-button>
+      @if (lastNight) {
+        <ion-button class="app-btn app-btn-secondary" expand="block" (click)="logSleep()">
+          <ion-icon slot="start" name="bed-outline"></ion-icon>Log sleep
+        </ion-button>
+      }
+    </div>
+  </div>
+</ion-content>

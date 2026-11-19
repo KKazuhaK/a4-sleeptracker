@@ -1,0 +1,47 @@
+:host { display: block; }
+svg {
+  display: block;
+  width: min(100%, 300px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.handle { outline: none; &:focus-visible .badge-bg { stroke: var(--app-primary); stroke-width: 3; } }
+.hit { fill: transparent; }
+// touch-action is ignored on elements inside an SVG, so it must sit on the <svg> itself;
+// otherwise a finger drag starts page scrolling and the browser cancels the pointer.
+svg.editable { touch-action: none; -webkit-user-select: none; user-select: none; }
+svg.editable .handle { cursor: grab; &:active { cursor: grabbing; } }
+.ring {
+  fill: none;
+  stroke: var(--app-track);
+  stroke-width: 16;
+  transition: opacity 0.25s ease-out;
+  &.dim { opacity: 0.6; }
+}
+.arc {
+  fill: none;
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+.stop-a { stop-color: var(--arc-a); }
+.stop-b { stop-color: var(--arc-b); }
+.tick { stroke: var(--app-text-2); stroke-width: 1.5; stroke-linecap: round; opacity: 0.6; }
+.tick-label {
+  fill: var(--app-text-2);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.badge-bg { fill: var(--app-surface-solid); stroke: var(--app-hairline); stroke-width: 1; }
+.glyph { fill: var(--app-primary); stroke: var(--app-primary); stroke-width: 1.2; stroke-linecap: round; }
+g.glyph path { fill: none; }
+.big {
+  fill: var(--app-text);
+  font-family: var(--app-font-rounded);
+  font-weight: 700;
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+}
+.times { fill: var(--app-text-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+.empty { fill: var(--app-text-2); font-size: 12px; }

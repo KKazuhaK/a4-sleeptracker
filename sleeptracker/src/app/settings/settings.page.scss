@@ -1,0 +1,42 @@
+.section-title {
+  margin: 24px 0 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-text-2);
+  &:first-child { margin-top: 8px; }
+}
+// iOS inset grouped look.
+.group {
+  border-radius: 22px;
+  overflow: hidden;
+  margin: 0 0 16px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 16px;
+  & + .row { border-top: 1px solid var(--app-hairline); }
+  &.sub { padding-left: 64px; }
+}
+.grow { flex: 1; min-width: 0; }
+ion-toggle { --track-background-checked: var(--app-primary); }
+.action {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: var(--app-text);
+  text-align: left;
+  transition: opacity 0.2s ease-out;
+  &:disabled { opacity: 0.4; }
+  &:active:not(:disabled) { background: var(--app-accent-soft); }
+  &.danger { color: var(--app-danger-fg); }
+}
+.danger-badge { background: var(--tier-high-bg); color: var(--tier-high-fg); }
+.icon-btn { min-width: 44px; min-height: 44px; margin: 0; --padding-start: 0; --padding-end: 0; }
+.add-btn { min-height: 44px; margin: 0 0 0 -12px; }
+.footnote { margin: 0 16px; font-size: 13px; color: var(--app-text-2); }

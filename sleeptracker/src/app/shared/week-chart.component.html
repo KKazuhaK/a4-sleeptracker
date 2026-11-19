@@ -1,0 +1,30 @@
+<p class="summary num">{{ summary }}</p>
+<svg viewBox="0 0 300 164" role="img" [attr.aria-label]="label">
+  <defs>
+    <linearGradient [attr.id]="gid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="stop-a" />
+      <stop offset="1" class="stop-b" />
+    </linearGradient>
+  </defs>
+
+  <line class="guide" x1="24" x2="300" [attr.y1]="guideY" [attr.y2]="guideY" />
+  <text class="guide-label" x="0" [attr.y]="guideY + 3">8h</text>
+
+  @for (d of days; track $index) {
+    @let b = bar($index, d);
+    <rect class="track" [attr.x]="b.x" [attr.y]="top" width="18" [attr.height]="trackH" rx="6" />
+    @if (d.minutes > 0) {
+      <rect class="bar" [attr.fill]="'url(#' + gid + ')'" [attr.x]="b.x" [attr.y]="b.y" width="18" [attr.height]="b.h" rx="6" />
+      @if (b.over) {
+        <!-- Cap marker: this night is longer than the 10 h scale -->
+        <path class="cap" [attr.d]="'M ' + (b.cx - 5) + ' ' + (top - 2) + ' L ' + b.cx + ' ' + (top - 8) + ' L ' + (b.cx + 5) + ' ' + (top - 2)" />
+      }
+    }
+    <text class="day" [class.today]="d.today" [attr.x]="b.cx" y="128" text-anchor="middle">{{ d.initial }}</text>
+    @if (b.tier; as t) {
+      <circle [class]="'dot dot-' + t" [attr.cx]="b.cx" cy="148" r="9" />
+      <text class="dot-num" [attr.x]="b.cx" y="148" text-anchor="middle" dominant-baseline="central">{{ rounded(d.sleepiness) }}</text>
+    }
+  }
+</svg>
+<p class="legend">Bars: hours slept · Dots: average sleepiness (1–7)</p>

@@ -35,3 +35,402 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ---- App styles ---- */
+body {
+  font-family: var(--ion-font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--ion-background-color);
+}
+
+// Page background gradient (solid --ion-background-color stays as fallback).
+ion-content {
+  --background: var(--app-bg-grad);
+  --color: var(--app-text);
+}
+
+ion-title.title-large,
+.title-large {
+  font-weight: 700;
+}
+
+// Translucent bars with blur and a hairline edge.
+ion-header ion-toolbar {
+  --background: var(--app-bar-bg);
+  --border-color: var(--app-hairline);
+  -webkit-backdrop-filter: var(--app-glass-blur);
+  backdrop-filter: var(--app-glass-blur);
+}
+ion-header[collapse='condense'] ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+// iOS 26 sheet bar: no divider, round glass ✕ / filled ✓ buttons.
+// Extra specificity beats Ionic's `.header-ios ion-toolbar:last-of-type` hairline.
+:root ion-modal ion-header.header-ios ion-toolbar:last-of-type {
+  --border-width: 0;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --min-height: 60px;
+}
+ion-modal ion-header::after {
+  display: none;
+}
+// `:root` beats ion-buttons' scoped toolbar rules (which make solid buttons transparent, 4px radius).
+:root ion-button.bar-btn {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 999px;
+  --box-shadow: inset 0 0 0 1px var(--app-tabbar-edge);
+  --background: var(--app-alert-btn-bg);
+  --background-activated: var(--app-alert-btn-bg);
+  --background-hover: var(--app-alert-btn-bg);
+  --color: var(--app-text);
+  // In a toolbar Ionic paints solid buttons with the toolbar colours instead of --background/--color.
+  --ion-toolbar-color: var(--app-alert-btn-bg);
+  --ion-toolbar-background: var(--app-text);
+
+  &::part(native) {
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+  ion-icon {
+    font-size: 22px;
+  }
+}
+:root ion-button.bar-btn-primary {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: var(--ion-color-primary-contrast);
+  --ion-toolbar-color: var(--ion-color-primary);
+  --ion-toolbar-background: var(--ion-color-primary-contrast);
+  --box-shadow: none;
+}
+ion-modal ion-header ion-toolbar {
+  --background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+// Floating "liquid glass" tab bar (iOS 26 style): an inset capsule that content scrolls behind.
+ion-tab-bar {
+  --background: var(--app-tabbar-bg);
+  --border: 0;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--ion-safe-area-bottom, 0px) + 10px);
+  height: 62px;
+  padding: 4px;
+  border-radius: 999px;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: inset 0 0 0 1px var(--app-tabbar-edge), var(--app-tabbar-shadow);
+}
+ion-tab-button {
+  // Buttons are transparent so the bar reads as one capsule; only the selected tab gets a pill.
+  --background: transparent;
+  --background-focused: transparent;
+  --color: var(--app-tabbar-fg);
+  --color-selected: var(--app-tabbar-fg-selected);
+  --padding-top: 0;
+  --padding-bottom: 0;
+  border-radius: 999px;
+  transition: background-color 0.25s ease-out;
+}
+// The selected tab sits on its own lighter pill.
+ion-tab-button.tab-selected {
+  background: var(--app-tabbar-selected);
+}
+// Leave room so the last item on each page can scroll clear of the floating bar.
+app-tabs ion-content::part(scroll) {
+  padding-bottom: calc(var(--ion-safe-area-bottom, 0px) + 96px);
+}
+@media (prefers-reduced-motion: reduce) {
+  ion-tab-button {
+    transition: none;
+  }
+}
+
+// Numbers and big values.
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.num-rounded {
+  font-family: var(--app-font-rounded);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+// Glass surface: translucent, blurred, hairline as inset shadow (no visible outline).
+.glass {
+  background: var(--app-surface);
+  -webkit-backdrop-filter: var(--app-glass-blur);
+  backdrop-filter: var(--app-glass-blur);
+  box-shadow: inset 0 0 0 1px var(--app-hairline), var(--app-card-shadow);
+}
+
+.app-card {
+  @extend .glass;
+  border-radius: var(--app-radius-card);
+  padding: 18px;
+  margin: 0 0 var(--app-space-2);
+}
+
+.section-label,
+.app-card h2 {
+  margin: 0 0 var(--app-space-1);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-text-2);
+}
+
+.muted {
+  color: var(--app-text-2);
+}
+
+.page-pad {
+  padding: var(--app-space-1) var(--app-space-2) var(--app-space-3);
+}
+
+// Primary: accent gradient pill. Secondary: tinted surface.
+.app-btn {
+  --border-radius: var(--app-radius-btn);
+  --background: var(--app-btn-grad);
+  --background-activated: var(--app-btn-grad);
+  --background-hover: var(--app-btn-grad);
+  --background-focused: var(--app-btn-grad);
+  --color: #ffffff;
+  --box-shadow: none;
+  height: 50px;
+  min-height: 50px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  transition: transform 0.2s ease-out;
+  &:active { transform: scale(0.98); }
+}
+.app-btn.app-btn-secondary {
+  --background: var(--app-accent-soft);
+  --background-activated: var(--app-accent-soft);
+  --background-hover: var(--app-accent-soft);
+  --background-focused: var(--app-accent-soft);
+  --color: var(--app-primary);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--app-text-2);
+  padding: var(--app-space-3) var(--app-space-2);
+}
+
+.warn-text {
+  display: flex;
+  gap: var(--app-space-1);
+  align-items: flex-start;
+  margin: var(--app-space-1) 0 0;
+  color: var(--tier-mid-fg);
+  font-size: 14px;
+}
+
+.error-text {
+  color: var(--app-danger-fg);
+}
+
+// Sleepiness tier pill (number + text, never colour alone).
+.tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 28px;
+}
+.tier-low { background: var(--tier-low-bg); color: var(--tier-low-fg); }
+.tier-mid { background: var(--tier-mid-bg); color: var(--tier-mid-fg); }
+.tier-high { background: var(--tier-high-bg); color: var(--tier-high-fg); }
+.tier-fg-low { color: var(--tier-low-fg); }
+.tier-fg-mid { color: var(--tier-mid-fg); }
+.tier-fg-high { color: var(--tier-high-fg); }
+
+// Round icon badge used in list rows.
+.badge {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-accent-soft);
+  color: var(--app-primary);
+  font-size: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// Small centred modal for date/time pickers (datetime-button pattern).
+ion-modal.date-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+}
+
+// Picker pop-ups (our date/time modals and the ones ion-datetime-button opens), iOS 26 style.
+ion-modal.date-modal,
+ion-modal.ion-datetime-button-overlay {
+  --background: rgb(var(--app-picker-bg-rgb));
+  --border-radius: 28px;
+  --box-shadow: inset 0 0 0 1px var(--app-tabbar-edge), 0 20px 50px rgba(0, 0, 0, 0.3);
+
+  ion-datetime {
+    // Override the inline-card look from sheet.scss: inside a pop-up the picker is the panel.
+    background: rgb(var(--app-picker-bg-rgb));
+    box-shadow: none;
+    border-radius: 0;
+    --background: rgb(var(--app-picker-bg-rgb));
+    --background-rgb: var(--app-picker-bg-rgb);
+    // Fade layers must match the panel or they show as pale strips beside the wheel.
+    --wheel-fade-background-rgb: var(--app-picker-bg-rgb);
+    --wheel-highlight-background: var(--app-accent-soft);
+    --wheel-highlight-border-radius: 12px;
+    // Hide the hairlines Ionic draws above the header and the buttons.
+    --ion-color-step-200: transparent;
+  }
+}
+
+// Capsule Cancel / Done buttons slotted into ion-datetime.
+.picker-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 4px 8px 8px;
+
+  ion-button {
+    flex: 1;
+    margin: 0;
+    min-height: 46px;
+    --border-radius: 999px;
+    --box-shadow: none;
+    --background: var(--app-alert-btn-bg);
+    --background-activated: var(--app-alert-btn-bg);
+    --color: var(--app-text);
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  ion-button.primary {
+    --background: var(--ion-color-primary);
+    --background-activated: var(--ion-color-primary-shade);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+
+// iOS 26-style alerts: rounder glass panel, left-aligned text, capsule buttons.
+// `:root` raises specificity above Ionic's scoped `.sc-ion-alert-ios` rules.
+:root ion-alert {
+  --background: var(--app-alert-bg);
+  --max-width: 320px;
+  --backdrop-opacity: 0.3;
+
+  .alert-wrapper {
+    border-radius: 30px;
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: inset 0 0 0 1px var(--app-tabbar-edge), 0 24px 60px rgba(0, 0, 0, 0.3);
+  }
+  .alert-head {
+    padding: 22px 22px 6px;
+    text-align: start;
+  }
+  .alert-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .alert-message {
+    padding: 0 22px 18px;
+    text-align: start;
+    font-size: 15px;
+    color: var(--app-text-2);
+  }
+  .alert-button-group {
+    gap: 10px;
+    padding: 0 16px 16px;
+    flex-wrap: nowrap;
+  }
+  .alert-button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 48px;
+    margin: 0;
+    border: 0 !important;
+    border-radius: 999px;
+    background: var(--app-alert-btn-bg);
+    color: var(--app-text);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .alert-button.alert-button-role-destructive {
+    background: var(--app-danger);
+    color: #fff;
+  }
+}
+
+// Toasts as floating glass capsules, matching the tab bar.
+ion-toast {
+  --background: var(--app-tabbar-bg);
+  --color: var(--app-text);
+  --border-radius: 999px;
+  --box-shadow: inset 0 0 0 1px var(--app-tabbar-edge), var(--app-tabbar-shadow);
+  --button-color: var(--app-accent-fg);
+  --start: 16px;
+  --end: 16px;
+
+  &::part(message) {
+    font-weight: 500;
+  }
+  &::part(button) {
+    font-weight: 700;
+    border-radius: 999px;
+  }
+}
+ion-toast.ion-color-danger {
+  --background: var(--app-danger);
+  --color: #fff;
+}
+
+// Time pills from ion-datetime-button: accent-soft with accent text, like the "Now" pill.
+ion-datetime-button {
+  &::part(native) {
+    background: var(--app-accent-soft);
+    color: var(--app-accent-fg);
+    border-radius: 999px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 18px;
+    font-family: var(--app-font-rounded);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+}

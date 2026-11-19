@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>History</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">History</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="page-pad">
+    <ion-segment [value]="filter" (ionChange)="setFilter($event)">
+      <ion-segment-button value="all"><ion-label>All</ion-label></ion-segment-button>
+      <ion-segment-button value="sleep"><ion-label>Sleep</ion-label></ion-segment-button>
+      <ion-segment-button value="sleepiness"><ion-label>Sleepiness</ion-label></ion-segment-button>
+    </ion-segment>
+
+    @for (g of groups; track g.key) {
+      <h2 class="day-heading">{{ g.heading }}</h2>
+      <ion-list lines="none">
+        @for (r of g.items; track r.id) {
+          <ion-item-sliding #slider>
+            <ion-item button detail="false" (click)="edit(r)">
+              @if (asSleep(r); as n) {
+                <span class="badge" slot="start"><ion-icon name="moon-outline"></ion-icon></span>
+                <ion-label>
+                  <div class="primary">Sleep</div>
+                  <p class="secondary num">
+                    {{ formatTime(n.sleepStart) }} – {{ formatTime(n.sleepEnd) }}@if (n.quality) { · Quality {{ n.quality }}/5 }
+                  </p>
+                  @if (n.note) { <p class="secondary">{{ n.note }}</p> }
+                </ion-label>
+                <span slot="end" class="value num-rounded">{{ formatDurationShort(n.durationMinutes) }}</span>
+              } @else {
+                @if (asSleepiness(r); as s) {
+                  <span class="badge" slot="start"><ion-icon name="speedometer-outline"></ion-icon></span>
+                  <ion-label>
+                    <div class="primary">Sleepiness</div>
+                    <p class="secondary num">{{ formatTime(s.loggedAt) }}@if (s.note) { · {{ s.note }} }</p>
+                  </ion-label>
+                  <app-tier-pill slot="end" [value]="s.loggedValue" />
+                }
+              }
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" aria-label="Delete entry" (click)="remove(r, slider)">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Delete
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
+    } @empty {
+      <p class="empty-state">{{ emptyText }}</p>
+    }
+  </div>
+</ion-content>

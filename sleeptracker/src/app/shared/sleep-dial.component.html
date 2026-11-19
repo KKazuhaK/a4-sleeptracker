@@ -1,0 +1,64 @@
+<svg viewBox="-8 -8 216 216" [attr.role]="editable ? 'group' : 'img'" [attr.aria-label]="editable ? 'Sleep window' : label" [class.editable]="editable">
+  <defs>
+    <linearGradient [attr.id]="gid" gradientUnits="userSpaceOnUse"
+      [attr.x1]="startPt.x" [attr.y1]="startPt.y" [attr.x2]="endPt.x" [attr.y2]="endPt.y">
+      <stop offset="0" class="stop-a" />
+      <stop offset="1" class="stop-b" />
+    </linearGradient>
+  </defs>
+
+  <circle class="ring" [class.dim]="!hasWindow" cx="100" cy="100" r="76" />
+
+  @for (t of ticks; track t.label) {
+    <line class="tick" [attr.x1]="t.line.a.x" [attr.y1]="t.line.a.y" [attr.x2]="t.line.b.x" [attr.y2]="t.line.b.y" />
+    <text class="tick-label" [attr.x]="t.text.x" [attr.y]="t.text.y" text-anchor="middle" dominant-baseline="central">{{ t.label }}</text>
+  }
+
+  @if (hasArc) {
+    <path class="arc" [attr.d]="arcPath" [attr.stroke]="'url(#' + gid + ')'" />
+  }
+
+  @if (hasWindow) {
+    <!-- Moon handle: bedtime -->
+    <g class="handle" [attr.transform]="'translate(' + startPt.x + ' ' + startPt.y + ')'"
+      [attr.tabindex]="editable ? 0 : null" [attr.role]="editable ? 'slider' : null"
+      [attr.aria-label]="editable ? 'Bedtime' : null" [attr.aria-valuemin]="editable ? 0 : null"
+      [attr.aria-valuemax]="editable ? 1439 : null" [attr.aria-valuenow]="editable ? bedMin : null"
+      [attr.aria-valuetext]="editable ? bedText() : null"
+      (touchstart)="stop($event)" (mousedown)="stop($event)" (pointerdown)="down('bed', $event)" (pointermove)="move($event)" (pointerup)="up()" (pointercancel)="up()"
+      (keydown)="key('bed', $event)">
+      @if (editable) { <circle class="hit" r="24" /> }
+      <circle class="badge-bg" r="12" />
+      <path class="glyph" transform="translate(-6 -6) scale(0.5)" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </g>
+    <!-- Sun handle: wake up -->
+    <g class="handle" [attr.transform]="'translate(' + endPt.x + ' ' + endPt.y + ')'"
+      [attr.tabindex]="editable ? 0 : null" [attr.role]="editable ? 'slider' : null"
+      [attr.aria-label]="editable ? 'Wake up' : null" [attr.aria-valuemin]="editable ? 0 : null"
+      [attr.aria-valuemax]="editable ? 1439 : null" [attr.aria-valuenow]="editable ? wakeMin : null"
+      [attr.aria-valuetext]="editable ? wakeText() : null"
+      (touchstart)="stop($event)" (mousedown)="stop($event)" (pointerdown)="down('wake', $event)" (pointermove)="move($event)" (pointerup)="up()" (pointercancel)="up()"
+      (keydown)="key('wake', $event)">
+      @if (editable) { <circle class="hit" r="24" /> }
+      <circle class="badge-bg" r="12" />
+      <g class="glyph">
+        <circle r="3" />
+        <path d="M0 -7V-5M0 5V7M-7 0H-5M5 0H7M-5 -5L-3.6 -3.6M3.6 3.6L5 5M-5 5L-3.6 3.6M3.6 -3.6L5 -5" />
+      </g>
+    </g>
+
+    <text class="big" x="100" y="98" text-anchor="middle" [style.font-size.px]="durationSize">{{ duration }}</text>
+    @if (minutes > 0) {
+      <text class="times" x="100" y="118" text-anchor="middle">{{ times }}</text>
+      @if (quality && !editable) {
+        <text class="times" x="100" y="134" text-anchor="middle">Quality {{ quality }}/5</text>
+      }
+    }
+  } @else {
+    <text class="empty" x="100" y="94" text-anchor="middle">
+      @for (line of emptyLines; track $index) {
+        <tspan x="100" [attr.dy]="$index === 0 ? 0 : 15">{{ line }}</tspan>
+      }
+    </text>
+  }
+</svg>

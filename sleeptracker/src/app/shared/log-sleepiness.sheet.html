@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="solid" class="bar-btn" aria-label="Cancel" (click)="cancel()"><ion-icon slot="icon-only" name="close"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>{{ record ? 'Edit sleepiness' : 'Log sleepiness' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="solid" class="bar-btn bar-btn-primary" aria-label="Save" (click)="save()" [disabled]="!valid || saving"><ion-icon slot="icon-only" name="checkmark"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="sheet-body">
+    <span class="field-label" style="margin-top:8px">How sleepy are you right now?</span>
+    <div class="scale" role="radiogroup" aria-label="Sleepiness from 1 to 7" (keydown)="onScaleKey($event)">
+      @for (s of scale; track s.value) {
+        <button type="button" role="radio" class="scale-btn" [attr.aria-checked]="value === s.value"
+          [attr.tabindex]="tabIndexFor(s.value)" [attr.aria-label]="s.value + ', ' + label(s.value)" (click)="value = s.value">
+          <span [class]="'dotbtn dot-' + tier(s.value)" class="num-rounded">{{ s.value }}</span>
+        </button>
+      }
+    </div>
+    <div class="scale-ends"><span>Alert</span><span>Asleep soon</span></div>
+
+    <div class="selected glass">
+      @if (value) {
+        <p [class]="'selected-title num-rounded tier-fg-' + tier(value)">{{ value }} · {{ label(value) }}</p>
+        <p class="desc">{{ selectedText }}</p>
+      } @else {
+        <p class="desc">Tap a number to choose how you feel.</p>
+      }
+    </div>
+
+    <div class="when-row glass" style="margin-top:20px">
+      <span class="grow">Time</span>
+      <button type="button" class="time-btn num" (click)="$any($event.currentTarget).blur(); pickingTime = true">{{ timeText }}</button>
+      @if (canReset) {
+        <button type="button" class="link" (click)="reset()">{{ record ? 'Reset' : 'Reset to now' }}</button>
+      }
+    </div>
+    @if (future) {
+      <p class="warn-text error-text">Time can't be in the future.</p>
+    }
+
+    <span class="field-label">Note (optional)</span>
+    <ion-textarea class="note-input" [autoGrow]="true" rows="2" placeholder="Anything worth remembering" [value]="note" (ionInput)="setNote($event)"></ion-textarea>
+  </div>
+
+  <ion-modal class="date-modal" [isOpen]="pickingTime" (didDismiss)="pickingTime = false">
+    <ng-template>
+      <ion-datetime #timePicker presentation="time" [preferWheel]="true" [value]="timeValue"
+        (ionChange)="setTime($event)">
+        <div slot="buttons" class="picker-actions">
+          <ion-button fill="solid" (click)="timePicker.cancel(true)">Cancel</ion-button>
+          <ion-button fill="solid" class="primary" (click)="timePicker.confirm(true)">Done</ion-button>
+        </div>
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+</ion-content>
