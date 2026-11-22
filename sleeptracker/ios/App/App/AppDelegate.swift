@@ -47,3 +47,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
+
+/// Xcode 27's SDK refuses to launch apps without the UIScene life cycle.
+/// The window comes from Main.storyboard (see UIApplicationSceneManifest in Info.plist);
+/// URL opens are forwarded so the Capacitor App plugin still sees them.
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    /// On a cold launch, URLs and user activities arrive here instead of the callbacks below.
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+        for activity in connectionOptions.userActivities {
+            self.scene(scene, continue: activity)
+        }
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts {
+            _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, open: context.url, options: [:])
+        }
+    }
+
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+    }
+}
