@@ -3,3 +3,7 @@
 # Local tool settings
 .claude/
 .codex/
+
+# Demo recordings go in the Canvas zip, not git
+*.mov
+*.mp4
